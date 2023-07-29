@@ -89,6 +89,34 @@ document.addEventListener("DOMContentLoaded", () => {
       if (otherCharacterDiv) {
         otherCharacterDiv.style.left = `${position.x}px`;
         otherCharacterDiv.style.top = `${position.y}px`;
+  
+        // Verifica se o jogador está em um left maior que 1390
+        if (position.x > 1390) {
+          // Se estiver em um left entre 1650 e 1735
+          if (position.x >= 1650 && position.x <= 1735 && position.y < 323) {
+            // Verifica se o jogador está com top menor que 323
+            if (position.y < 323) {
+              position.y = 323; // Define o top mínimo para 323
+            }
+  
+            // Reduz o tamanho do jogador quando ele está entre 1650 e 1735
+            otherCharacterDiv.style.transform = 'scale(0.8)';
+  
+            // Muda o zIndex para que o jogador fique por trás dos outros quando está nessa posição
+            otherCharacterDiv.style.zIndex = '3';
+          } else {
+            // Se não estiver entre 1650 e 1735, garanta que o top não seja menor que 323
+            if (position.y < 323) {
+              position.y = 323; // Define o top mínimo para 323
+            }
+  
+            // Restaura o tamanho original do jogador quando não está entre 1650 e 1735
+            otherCharacterDiv.style.transform = 'scale(1)';
+  
+            // Restaura o zIndex original do jogador quando não está nessa posição
+            otherCharacterDiv.style.zIndex = '6';
+          }
+        }
       } else {
         // Se o personagem ainda não existe na tela, crie-o
         createOtherCharacter(playerUid, position);
@@ -145,7 +173,6 @@ async function updateOtherCharacterName(playerUid, position) {
     otherCharacterDiv.id = playerUid;
     otherCharacterDiv.className = 'character-box other-character';
     document.body.appendChild(otherCharacterDiv);
-    updateOtherCharacterPosition(playerUid, position);
   }
 
 
@@ -162,7 +189,8 @@ async function updateOtherCharacterName(playerUid, position) {
     }
 
 
-let playerPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 }; // Posição inicial do jogador (centro da tela)
+let playerPosition = { x: 235.5, y: 333.5 }; // Posição inicial do jogador
+
 // Atualiza a posição do personagem na tela
 function updateCharacterPosition() {
     const characterDiv = document.getElementById('character-box');
@@ -171,12 +199,126 @@ function updateCharacterPosition() {
   
     // Atualiza a posição do jogador no banco de dados
     updatePlayerPosition(playerPosition);
+
   }
   
   // Função para movimentar o jogador
+
+        // Referência para a porta esquerda do elevador no banco de dados
+        const leftDoorRef = ref(db, 'elevator/doors/left');
+        // Referência para a porta direita do elevador no banco de dados
+        const rightDoorRef = ref(db, 'elevator/doors/right');
+
+        //Posição do Elevador
+        const left = document.getElementById('left-door');
+        left.style.transform = 'translate(0px, -300px)'
+
+        const right = document.getElementById('right-door')
+        right.style.transform = 'translate(0px, -300px)'
+        
+
   function moveCharacter(keyCode) {
     const step = 5; // Quantidade de pixels para mover o jogador
-  
+
+          //Abrir elevador
+              // Verifica se a tecla pressionada é a barra de espaço (keyCode 32)
+              if (keyCode === 32) {
+                // Verifica se o jogador está na posição e altura corretas para acionar o código
+                if (
+                  playerPosition.x >= 1775 &&
+                  playerPosition.x <= 1870 &&
+                  playerPosition.y < 333
+                ) {
+
+                  if (left.style.transform == 'translate(0px, -300px)') {
+                    left.style.animation = 'leftDoorElevator 2s ease-in';
+                    setTimeout(() => {
+                      left.style.transform = 'translate(-105px, -300px)';
+                    }, 1000 * 1.8);
+                  } else {
+                    left.style.animation = 'leftDoorElevatorClose 2s ease-in';
+                    setTimeout(() => {
+                      left.style.transform = 'translate(0px, -300px)';
+                    }, 1000 * 1.8);
+                  }
+
+                  if (right.style.transform == 'translate(0px, -300px)') {
+                    right.style.animation = 'rightDoorElevator 2s ease-in';
+                    setTimeout(() => {
+                      right.style.transform = 'translate(105px, -300px)';
+                    }, 1000 * 1.8);
+                  } else {
+                    right.style.animation = 'rightDoorElevatorClose 2s ease-in';
+                    setTimeout(() => {
+                      right.style.transform = 'translate(0px, -300px)';
+                    }, 1000 * 1.8);
+                  }
+                }
+              }
+              if (keyCode === 32) {
+                // Verifica se o jogador está na posição e altura corretas para acionar o código
+                if (
+                  playerPosition.x >= 1650 &&
+                  playerPosition.x <= 1735 &&
+                  playerPosition.y < 320
+                ) {
+
+                  if (left.style.transform == 'translate(0px, -300px)') {
+                    left.style.animation = 'leftDoorElevator 2s ease-in';
+                    setTimeout(() => {
+                      left.style.transform = 'translate(-105px, -300px)';
+                    }, 1000 * 1.8);
+                  } else {
+                    left.style.animation = 'leftDoorElevatorClose 2s ease-in';
+                    setTimeout(() => {
+                      left.style.transform = 'translate(0px, -300px)';
+                    }, 1000 * 1.8);
+                  }
+
+                  if (right.style.transform == 'translate(0px, -300px)') {
+                    right.style.animation = 'rightDoorElevator 2s ease-in';
+                    setTimeout(() => {
+                      right.style.transform = 'translate(105px, -300px)';
+                    }, 1000 * 1.8);
+                  } else {
+                    right.style.animation = 'rightDoorElevatorClose 2s ease-in';
+                    setTimeout(() => {
+                      right.style.transform = 'translate(0px, -300px)';
+                    }, 1000 * 1.8);
+                  }
+                }
+              }
+
+          //---------
+
+                    // Verifica se o jogador está em um left maior que 1390
+                    if (playerPosition.x > 1390) {
+                      // Se estiver em um left entre 1650 e 1735
+                      if (playerPosition.x >= 1650 && playerPosition.x <= 1735 && playerPosition.y < 320 && left.style.transform == 'translate(-105px, -300px)' ) {
+                        // Verifica se o jogador está com top menor que 323
+                        if (playerPosition.y < 310) {
+                          playerPosition.y = 310; // Define o top mínimo para 323
+                        }
+                              // Reduz o tamanho do jogador quando ele está entre 1650 e 1735
+                              const characterDiv = document.getElementById('character-box');
+                              characterDiv.style.transform = 'scale(0.8)';
+
+                              // Muda o zIndex para que o jogador fique por trás dos outros quando está nessa posição
+                              characterDiv.style.zIndex = '3';
+                      } else {
+                        // Se não estiver entre 1650 e 1735, garanta que o top não seja menor que 323
+                        if (playerPosition.y < 323) {
+                          playerPosition.y = 323; // Define o top mínimo para 323
+                        }
+                              // Restaura o tamanho original do jogador quando não está entre 1650 e 1735
+                              const characterDiv = document.getElementById('character-box');
+                              characterDiv.style.transform = 'scale(1)';
+
+                              // Restaura o zIndex original do jogador quando não está nessa posição
+                              characterDiv.style.zIndex = '6';
+                      }
+                    }
+
     switch (keyCode) {
       case 87: // Tecla W (para cima)
         playerPosition.y -= step;
@@ -191,6 +333,8 @@ function updateCharacterPosition() {
         playerPosition.x += step;
         break;
     }
+
+
   
     updateCharacterPosition();
   }
@@ -211,3 +355,17 @@ window.addEventListener("beforeunload", () => {
     set(statusRef, 'offline');
   });
 
+    // Função para controlar o scrollX da página
+    function controlScroll(event) {
+        // Obter a posição horizontal atual do mouse
+        const mouseX = event.clientX;
+  
+        // Definir a quantidade de deslocamento horizontal (pode ajustar o valor para uma rolagem mais rápida ou lenta)
+        const scrollSpeed = 4;
+  
+        // Ajustar o scrollX da página de acordo com o movimento do mouse
+        window.scrollBy(mouseX > window.innerWidth / 2 ? scrollSpeed : -scrollSpeed, 0);
+      }
+  
+      // Adicionar o ouvinte de eventos ao movimento do mouse
+      document.addEventListener('mousemove', controlScroll);
