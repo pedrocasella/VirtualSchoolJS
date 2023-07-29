@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-import { getDatabase, set, ref, onValue } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+import { getDatabase, set, ref, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -19,7 +19,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
+const dbRef = ref(getDatabase());
 const database = getDatabase(app);
 const db = getDatabase();
 
@@ -204,11 +204,6 @@ function updateCharacterPosition() {
   
   // Função para movimentar o jogador
 
-        // Referência para a porta esquerda do elevador no banco de dados
-        const leftDoorRef = ref(db, 'elevator/doors/left');
-        // Referência para a porta direita do elevador no banco de dados
-        const rightDoorRef = ref(db, 'elevator/doors/right');
-
         //Posição do Elevador
         const left = document.getElementById('left-door');
         left.style.transform = 'translate(0px, -300px)'
@@ -216,43 +211,57 @@ function updateCharacterPosition() {
         const right = document.getElementById('right-door')
         right.style.transform = 'translate(0px, -300px)'
         
+        // Referência para a porta esquerda do elevador no banco de dados
+        const leftDoorRef = ref(db, 'elevators/doors/left');
+        // Referência para a porta direita do elevador no banco de dados
+        const rightDoorRef = ref(db, 'elevators/doors/right');
+
+        // Variável para rastrear o estado das portas do elevador
+        let leftDoorState = 'closed';
+
+        // Função para abrir ou fechar as portas do elevador
+        function toggleElevatorDoors() {
+          
+          get(child(dbRef, 'elevators/doors/')).then((snapshot) => {
+            if (snapshot.exists()) {
+              const data = snapshot.val()
+              console.log(data)
+            if (data.left === 'closed') {
+              set(leftDoorRef, 'open');
+              left.style.animation = 'leftDoorElevator 2s ease-in';
+              right.style.animation = 'rightDoorElevator 2s ease-in';
+              setTimeout(() => {
+                left.style.transform = 'translate(-105px, -300px)';
+                right.style.transform = 'translate(105px, -300px)';
+              }, 1000 * 1.8);
+              
+            } else {
+              set(leftDoorRef, 'closed');
+              left.style.animation = 'leftDoorElevatorClose 2s ease-in';
+              right.style.animation = 'rightDoorElevatorClose 2s ease-in';
+              setTimeout(() => {
+                left.style.transform = 'translate(0px, -300px)';
+                right.style.transform = 'translate(0px, -300px)';
+              }, 1000 * 1.8);
+
+            }
+
+            }})
+
+        }
 
   function moveCharacter(keyCode) {
     const step = 5; // Quantidade de pixels para mover o jogador
 
           //Abrir elevador
               // Verifica se a tecla pressionada é a barra de espaço (keyCode 32)
+              // Abrir ou fechar as portas do elevador
               if (keyCode === 32) {
                 // Verifica se o jogador está na posição e altura corretas para acionar o código
-                if (
-                  playerPosition.x >= 1775 &&
-                  playerPosition.x <= 1870 &&
-                  playerPosition.y < 333
-                ) {
-
-                  if (left.style.transform == 'translate(0px, -300px)') {
-                    left.style.animation = 'leftDoorElevator 2s ease-in';
-                    setTimeout(() => {
-                      left.style.transform = 'translate(-105px, -300px)';
-                    }, 1000 * 1.8);
-                  } else {
-                    left.style.animation = 'leftDoorElevatorClose 2s ease-in';
-                    setTimeout(() => {
-                      left.style.transform = 'translate(0px, -300px)';
-                    }, 1000 * 1.8);
-                  }
-
-                  if (right.style.transform == 'translate(0px, -300px)') {
-                    right.style.animation = 'rightDoorElevator 2s ease-in';
-                    setTimeout(() => {
-                      right.style.transform = 'translate(105px, -300px)';
-                    }, 1000 * 1.8);
-                  } else {
-                    right.style.animation = 'rightDoorElevatorClose 2s ease-in';
-                    setTimeout(() => {
-                      right.style.transform = 'translate(0px, -300px)';
-                    }, 1000 * 1.8);
-                  }
+                if (playerPosition.x >= 1775 && playerPosition.x <= 1870 && playerPosition.y < 333) {
+                  toggleElevatorDoors();
+                } else if (playerPosition.x >= 1650 && playerPosition.x <= 1735 && playerPosition.y < 320) {
+                  toggleElevatorDoors();
                 }
               }
               if (keyCode === 32) {
