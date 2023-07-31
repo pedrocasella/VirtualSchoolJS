@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-import { getDatabase, set, ref, onValue } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+import { getDatabase, set, ref, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -205,11 +205,32 @@ function updateCharacterPosition() {
   // Função para movimentar o jogador
 
         //Posição do Elevador
+        const doorRef = ref(db, 'elevator/door/state')
+
         const left = document.getElementById('left-door');
         left.style.transform = 'translate(0px, -300px)'
 
         const right = document.getElementById('right-door')
         right.style.transform = 'translate(0px, -300px)'
+
+        onValue(doorRef, (snapshot) => {
+            const data = snapshot.val()
+            if(data == 'open'){
+                left.style.animation = 'leftDoorElevator 2s ease-in';
+                right.style.animation = 'rightDoorElevator 2s ease-in';
+                setTimeout(() => {
+                  left.style.transform = 'translate(-105px, -300px)';
+                  right.style.transform = 'translate(105px, -300px)';
+                }, 1000 * 1.8);
+            }else{
+                left.style.animation = 'leftDoorElevatorClose 2s ease-in';
+                right.style.animation = 'rightDoorElevatorClose 2s ease-in';
+                setTimeout(() => {
+                  left.style.transform = 'translate(0px, -300px)';
+                  right.style.transform = 'translate(0px, -300px)';
+                }, 1000 * 1.8);
+            }
+        });
         
         // Referência para a porta esquerda do elevador no banco de dados
         const leftDoorRef = ref(db, 'elevators/doors/left');
@@ -220,6 +241,7 @@ function updateCharacterPosition() {
     const step = 5; // Quantidade de pixels para mover o jogador
 
           //Abrir elevador
+
               // Verifica se a tecla pressionada é a barra de espaço (keyCode 32)
               if (keyCode === 32) {
                 // Verifica se o jogador está na posição e altura corretas para acionar o código
@@ -230,27 +252,9 @@ function updateCharacterPosition() {
                 ) {
 
                   if (left.style.transform == 'translate(0px, -300px)') {
-                    left.style.animation = 'leftDoorElevator 2s ease-in';
-                    setTimeout(() => {
-                      left.style.transform = 'translate(-105px, -300px)';
-                    }, 1000 * 1.8);
+                    set(doorRef, 'open')
                   } else {
-                    left.style.animation = 'leftDoorElevatorClose 2s ease-in';
-                    setTimeout(() => {
-                      left.style.transform = 'translate(0px, -300px)';
-                    }, 1000 * 1.8);
-                  }
-
-                  if (right.style.transform == 'translate(0px, -300px)') {
-                    right.style.animation = 'rightDoorElevator 2s ease-in';
-                    setTimeout(() => {
-                      right.style.transform = 'translate(105px, -300px)';
-                    }, 1000 * 1.8);
-                  } else {
-                    right.style.animation = 'rightDoorElevatorClose 2s ease-in';
-                    setTimeout(() => {
-                      right.style.transform = 'translate(0px, -300px)';
-                    }, 1000 * 1.8);
+                    set(doorRef, 'closed')
                   }
                 }
               }
@@ -263,27 +267,9 @@ function updateCharacterPosition() {
                 ) {
 
                   if (left.style.transform == 'translate(0px, -300px)') {
-                    left.style.animation = 'leftDoorElevator 2s ease-in';
-                    setTimeout(() => {
-                      left.style.transform = 'translate(-105px, -300px)';
-                    }, 1000 * 1.8);
+                    set(doorRef, 'open')
                   } else {
-                    left.style.animation = 'leftDoorElevatorClose 2s ease-in';
-                    setTimeout(() => {
-                      left.style.transform = 'translate(0px, -300px)';
-                    }, 1000 * 1.8);
-                  }
-
-                  if (right.style.transform == 'translate(0px, -300px)') {
-                    right.style.animation = 'rightDoorElevator 2s ease-in';
-                    setTimeout(() => {
-                      right.style.transform = 'translate(105px, -300px)';
-                    }, 1000 * 1.8);
-                  } else {
-                    right.style.animation = 'rightDoorElevatorClose 2s ease-in';
-                    setTimeout(() => {
-                      right.style.transform = 'translate(0px, -300px)';
-                    }, 1000 * 1.8);
+                    set(doorRef, 'closed')
                   }
                 }
               }
