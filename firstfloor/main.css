@@ -158,3 +158,36 @@ body{
     z-index: 6;
   }
   
+  /*Interface*/
+
+  .interface{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 8;
+  }
+
+  .interface textarea{
+    width: 400px;
+    height: 20px;
+    border-radius: 30px;
+    font-weight: bolder;
+    border: solid #000 2px;
+    padding: 1rem;
+    margin-top: 42%;
+  }
+
+  /* Balão de fala */
+
+  /* Adicione este estilo para estilizar o balão de fala */
+.speech-bubble {
+    position: absolute;
+    transform: translateY(-160px);
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    font-size: 16px;
+    display: none; /* Inicialmente esconder o balão */
+  }
+  

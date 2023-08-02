@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-import { getDatabase, set, ref, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+import { getDatabase, set, ref, onValue, get, child, push } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -172,6 +172,13 @@ async function updateOtherCharacterName(playerUid, position) {
     const otherCharacterDiv = document.createElement('div');
     otherCharacterDiv.id = playerUid;
     otherCharacterDiv.className = 'character-box other-character';
+  
+    // Cria o balão de fala e adiciona-o à character-box
+    const speechBubble = document.createElement('div');
+    speechBubble.className = 'speech-bubble';
+    speechBubble.style.display = 'none';
+    otherCharacterDiv.appendChild(speechBubble);
+  
     document.body.appendChild(otherCharacterDiv);
   }
 
@@ -354,3 +361,95 @@ window.addEventListener("beforeunload", () => {
   
       // Adicionar o ouvinte de eventos ao movimento do mouse
       document.addEventListener('mousemove', controlScroll);
+
+//Sistema de fala
+
+const speechBubble = document.getElementById('speechBubble');
+const playerSay = document.getElementById('player-say');
+const playerUUID = localStorage.getItem('uuidVirtualSchool');
+
+// Referência para a coleção de mensagens no Firebase
+const messagesRef = ref(database, 'messages');
+
+// Função para enviar a mensagem do jogador para o Firebase
+function sendMessage(message) {
+  set(push(messagesRef), { sender: playerUUID, text: message });
+}
+
+
+// Função para criar e gerenciar o balão de fala de um jogador
+function createSpeechBubble(playerUid) {
+  const speechBubbleId = playerUid + '-speechBubble';
+  let speechBubble = document.getElementById(speechBubbleId);
+
+  if (!speechBubble) {
+    // Cria o balão de fala se ainda não existir
+    speechBubble = document.createElement('div');
+    speechBubble.id = speechBubbleId;
+    speechBubble.className = 'speech-bubble';
+    document.getElementById('character-box').appendChild(speechBubble);
+  }
+
+  // Esconde o balão de fala inicialmente
+  speechBubble.style.display = 'none';
+
+  return speechBubble;
+}
+
+// Função para exibir o balão de fala com a frase recebida
+function showSpeechBubble(playerUid, text) {
+  const speechBubble = createSpeechBubble(playerUid);
+  speechBubble.textContent = text;
+  speechBubble.style.display = 'block';
+
+  // Obtém a character-box do jogador pelo ID
+  const characterBox = document.getElementById(playerUid);
+  if (characterBox) {
+    characterBox.appendChild(speechBubble);
+  }
+
+  setTimeout(() => {
+    hideSpeechBubble(playerUid);
+  }, 10000);
+}
+
+// Função para esconder o balão de fala
+function hideSpeechBubble(playerUid) {
+  const speechBubble = document.getElementById(playerUid + '-speechBubble');
+  if (speechBubble) {
+    speechBubble.style.display = 'none';
+
+    // Remove o balão de fala da character-box
+    const characterBox = document.getElementById(playerUid);
+    if (characterBox) {
+      characterBox.removeChild(speechBubble);
+    }
+  }
+}
+
+// Evento de escuta para detectar quando o jogador pressiona a tecla "Enter"
+playerSay.addEventListener('keydown', (event) => {
+  if (event.keyCode === 13) {
+    // Verifica se a tecla pressionada é "Enter" (código 13)
+    const text = playerSay.value.trim();
+    if (text !== '') {
+      showSpeechBubble(playerUUID, text); // Exibe o balão de fala acima da cabeça do jogador
+      sendMessage(text); // Envia a mensagem para o Firebase quando o jogador pressiona "Enter"
+      playerSay.value = ''; // Limpa o textarea após enviar a mensagem
+    }
+    event.preventDefault(); // Impede a quebra de linha no textarea
+  }
+});
+
+// Evento de escuta para receber as mensagens de outros players
+onValue(messagesRef, (snapshot) => {
+  const messages = snapshot.val();
+  for (const key in messages) {
+    const message = messages[key];
+    if (message.sender !== playerUUID) {
+      // Exibe o balão de fala acima da cabeça do jogador que enviou a mensagem
+      showSpeechBubble(message.sender, message.text);
+    }
+  }
+});
+
