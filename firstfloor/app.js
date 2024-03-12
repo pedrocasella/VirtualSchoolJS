@@ -8,13 +8,13 @@ import { getDatabase, set, ref, onValue, get, child, push } from "https://www.gs
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDM2oOGBVEpW0xeqNlZGjOn2TBSbDG8Tow",
-  authDomain: "ichat-70e65.firebaseapp.com",
-  databaseURL: "https://ichat-70e65-default-rtdb.firebaseio.com",
-  projectId: "ichat-70e65",
-  storageBucket: "ichat-70e65.appspot.com",
-  messagingSenderId: "897708561792",
-  appId: "1:897708561792:web:40a15e74e2ffee83dc9d65"
+  apiKey: "AIzaSyCmZvoXWs5WwTugBMzKV4CV2jMLGZsPKDA",
+  authDomain: "deskvirtualicone.firebaseapp.com",
+  databaseURL: "https://deskvirtualicone-default-rtdb.firebaseio.com",
+  projectId: "deskvirtualicone",
+  storageBucket: "deskvirtualicone.appspot.com",
+  messagingSenderId: "138688944926",
+  appId: "1:138688944926:web:65c154f18dbe21b400870f"
 };
 
 // Initialize Firebase
